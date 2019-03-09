@@ -102,14 +102,14 @@
         this.anims.create({
             key: 'idleL',
             frames: this.anims.generateFrameNumbers('player', { start: 20, end: 23 }),
-            frameRate: 15,
+            frameRate: 150,
             repeat: -1
         });
 
         this.anims.create({
             key: 'idleR',
             frames: this.anims.generateFrameNumbers('player', { start: 16, end: 19 }),
-            frameRate: 15,
+            frameRate: 150,
             repeat: -1
         });
     }
@@ -147,7 +147,5 @@
         }
     }
     </script>
-
-    <button type="button" onclick="player.setVelocityX(-320);player.anims.play('left', true);dir = 'l';"
 </body>
 </html>
