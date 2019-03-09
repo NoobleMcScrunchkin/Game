@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="phaser.js"></script>
+</head>
+<body>
+
+    <script>
+    var config = {
+        type: Phaser.AUTO,
+        width: 1280,
+        height: 640,
+        physics: {
+            default: 'arcade',
+            arcade: {
+                gravity: { y: 1000 },
+                debug: false
+            }
+        },
+        scene: {
+            preload: preload,
+            create: create,
+            update: update
+        }
+    };
+
+    var game = new Phaser.Game(config);
+
+    function preload ()
+    {
+        //Background
+        this.load.image('clouds', 'assets/Background/Clouds.png');
+        this.load.image('grass1', 'assets/Background/Grass 1.png');
+        this.load.image('grass2', 'assets/Background/Grass 2.png');
+        this.load.image('sky1', 'assets/Background/Sky BG 1.png');
+        this.load.image('sky2', 'assets/Background/Sky BG 2.png');
+        this.load.image('waterR', 'assets/Background/Water Reflexion.png');
+        this.load.image('water', 'assets/Background/Water.png');
+
+        //Tiles
+        this.load.image('water1', 'assets/Tiles/Water1.png');
+        // this.load.image('water2', 'assets/Tiles/Water2.png');
+        // this.load.image('water3', 'assets/Tiles/Water3.png');
+        // this.load.image('water4', 'assets/Tiles/Water4.png');
+        this.load.image('BridgeEndL', 'assets/Tiles/BridgeEndL.png');
+        this.load.image('BridgeEndR', 'assets/Tiles/BridgeEndR.png');
+        this.load.image('BridgeMid', 'assets/Tiles/BridgeMid.png');
+        this.load.image('BridgeTopL', 'assets/Tiles/BridgeTopL.png');
+        this.load.image('BridgeTopR', 'assets/Tiles/BridgeTopR.png');
+        this.load.image('BridgeTopMid', 'assets/Tiles/BridgeTopMid.png');
+        this.load.image('Grass', 'assets/Tiles/Grass.png');
+        this.load.image('GrassEndL', 'assets/Tiles/GrassEndL.png');
+        this.load.image('GrassEndR', 'assets/Tiles/GrassEndR.png');
+        this.load.image('Ground', 'assets/Tiles/Ground.png');
+        this.load.image('GroundBottom', 'assets/Tiles/GroundBottom.png');
+        this.load.image('GroundCornerL', 'assets/Tiles/GroundCornerL.png');
+        this.load.image('GroundCornerR', 'assets/Tiles/GroundCornerR.png');
+        this.load.image('GroundEndL', 'assets/Tiles/GroundEndL.png');
+        this.load.image('GroundEndR', 'assets/Tiles/GroundEndR.png');
+        this.load.image('GroundPlat', 'assets/Tiles/GroundPlat.png');
+        this.load.image('GroundPlatL', 'assets/Tiles/GroundPlatL.png');
+        this.load.image('GroundPlatR', 'assets/Tiles/GroundPlatR.png');
+        this.load.image('RoughGroundL', 'assets/Tiles/RoughGroundL.png');
+        this.load.image('RoughGroundR', 'assets/Tiles/RoughGroundR.png');
+        this.load.image('Tree', 'assets/Tiles/Tree.png');
+
+        this.load.spritesheet('player',
+        'assets/sprite.png',
+        { frameWidth: 32, frameHeight: 72 }
+        );
+    }
+
+    function create ()
+    {
+        dir = "r";
+        this.add.image(0, 0, 'sky1').setOrigin(0, 0);
+        this.add.image(0, 0, 'sky2').setOrigin(0, 0);
+        this.add.image(0, 0, 'clouds').setOrigin(0, 0);
+
+        platforms = this.physics.add.staticGroup();
+        for (i=40;i<config.width;i+=80) {
+            platforms.create(i, (config.height-40), 'Grass');
+        }
+
+        player = this.physics.add.sprite(40, 300, 'player').setScale(2);
+        this.physics.add.collider(player, platforms);
+
+        this.anims.create({
+            key: 'left',
+            frames: this.anims.generateFrameNumbers('player', { start: 8, end: 15 }),
+            frameRate: 15,
+            repeat: -1
+        });
+
+        this.anims.create({
+            key: 'right',
+            frames: this.anims.generateFrameNumbers('player', { start: 0, end: 7 }),
+            frameRate: 15,
+            repeat: -1
+        });
+
+        this.anims.create({
+            key: 'idleL',
+            frames: this.anims.generateFrameNumbers('player', { start: 20, end: 23 }),
+            frameRate: 15,
+            repeat: -1
+        });
+
+        this.anims.create({
+            key: 'idleR',
+            frames: this.anims.generateFrameNumbers('player', { start: 16, end: 19 }),
+            frameRate: 15,
+            repeat: -1
+        });
+    }
+
+    function update ()
+    {
+        cursors = this.input.keyboard.createCursorKeys();
+        if (cursors.left.isDown)
+        {
+            player.setVelocityX(-320);
+
+            player.anims.play('left', true);
+            dir = "l";
+        }
+        else if (cursors.right.isDown)
+        {
+            player.setVelocityX(320);
+
+            player.anims.play('right', true);
+            dir = "r";
+        }
+        else
+        {
+            if (dir == "r") {
+                player.anims.play('idleR', true);
+            } else {
+                player.anims.play('idleL', true);
+            }
+            player.setVelocityX(0);
+        }
+
+        if (cursors.up.isDown && player.body.touching.down)
+        {
+            player.setVelocityY(-600);
+        }
+    }
+    </script>
+
+</body>
+</html>
