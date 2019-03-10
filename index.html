@@ -68,22 +68,27 @@
         'assets/sprite.png',
         { frameWidth: 32, frameHeight: 72 }
         );
+
+        this.load.image("tiles", "assets/TileSet.png");
+        this.load.tilemapTiledJSON("map", "maps/map.json");
     }
 
     function create ()
     {
-        dir = "r";
-        this.add.image(0, 0, 'sky1').setOrigin(0, 0);
-        this.add.image(0, 0, 'sky2').setOrigin(0, 0);
-        this.add.image(0, 0, 'clouds').setOrigin(0, 0);
-
-        platforms = this.physics.add.staticGroup();
-        for (i=40;i<config.width;i+=80) {
-            platforms.create(i, (config.height-40), 'Grass');
+        for (i = 0; i < 40000; i+=1280) {
+            this.add.image(i, 0, 'sky1').setOrigin(0, 0);
+            this.add.image(i, 0, 'sky2').setOrigin(0, 0);
+            this.add.image(i, 0, 'clouds').setOrigin(0, 0);
         }
 
-        player = this.physics.add.sprite(40, 300, 'player').setScale(2);
-        this.physics.add.collider(player, platforms);
+        dir = "r";
+        const map = this.make.tilemap({key: "map"});
+        const tileset = map.addTilesetImage("tileset", "tiles");
+        const foreground = map.createStaticLayer("foreground", tileset, 0, 0);
+        player = this.physics.add.sprite(120, 300, 'player').setScale(2);
+        const forerground = map.createStaticLayer("forerground", tileset, 0, 0);
+        foreground.setCollisionByProperty({ collides: true });
+        this.physics.add.collider(player, foreground);
 
         this.anims.create({
             key: 'left',
@@ -102,31 +107,47 @@
         this.anims.create({
             key: 'idleL',
             frames: this.anims.generateFrameNumbers('player', { start: 20, end: 23 }),
-            frameRate: 150,
+            frameRate: 15,
             repeat: -1
         });
 
         this.anims.create({
             key: 'idleR',
             frames: this.anims.generateFrameNumbers('player', { start: 16, end: 19 }),
-            frameRate: 150,
+            frameRate: 15,
             repeat: -1
         });
+
+        const camera = this.cameras.main;
+
+        // Set up the arrows to control the camera
+        const cursors = this.input.keyboard.createCursorKeys();
+        controls = new Phaser.Cameras.Controls.FixedKeyControl({
+          camera: camera,
+          // left: cursors.left,
+          // right: cursors.right,
+          // up: cursors.up,
+          // down: cursors.down,
+          speed: 0.32
+        });
+
+        camera.startFollow(player, false, 1, 0, 0, -20);
+        camera.setBounds(0, 0, 500000, 720)
     }
 
-    function update ()
+    function update (time, delta)
     {
         cursors = this.input.keyboard.createCursorKeys();
         if (cursors.left.isDown)
         {
-            player.setVelocityX(-320);
+            player.setVelocityX(-720);
 
             player.anims.play('left', true);
             dir = "l";
         }
         else if (cursors.right.isDown)
         {
-            player.setVelocityX(320);
+            player.setVelocityX(720);
 
             player.anims.play('right', true);
             dir = "r";
@@ -141,10 +162,12 @@
             player.setVelocityX(0);
         }
 
-        if (cursors.up.isDown && player.body.touching.down)
+        if (cursors.up.isDown && player.body.blocked.down)
         {
-            player.setVelocityY(-600);
+            player.setVelocityY(-800);
         }
+
+        controls.update(delta);
     }
     </script>
 </body>
